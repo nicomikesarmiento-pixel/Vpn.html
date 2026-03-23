@@ -1,1 +1,178 @@
-index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARMIENTO V6 | ROBLOX EDITION</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; text-align: center; }
+        
+        /* 🎮 ROBLOX ICON & BRANDING (TOP ARROW) */
+        .brand-header { margin-top: 25px; position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
+        .rbx-icon { font-size: 35px; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.5); margin-bottom: 5px; }
+        .brand-text { font-size: 14px; font-weight: 900; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* 🛡️ MAIN DASHBOARD */
+        .engine-room { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 94%; max-width: 480px; background: rgba(0, 10, 0, 0.98); border: 2px solid #00ff41; padding: 15px; border-radius: 12px; box-shadow: 0 0 40px rgba(0, 255, 65, 0.3); z-index: 10; }
+        .engine-title { font-size: 14px; font-weight: 900; border-bottom: 1px solid #004400; padding-bottom: 8px; margin-bottom: 10px; color: #fff; letter-spacing: 2px; }
+
+        /* 📊 DATA GRID */
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .slot { background: #001a00; border: 1px solid #003300; padding: 8px; text-align: left; }
+        .label { font-size: 7px; color: #00d9ff; text-transform: uppercase; display: block; }
+        .value { font-size: 11px; font-weight: bold; color: #fff; }
+
+        /* 🛡️ SECURITY SHIELDS */
+        .shield-container { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; background: #000; border: 1px solid #004400; padding: 8px; }
+        .shield-item { font-size: 8px; text-align: left; color: #888; display: flex; justify-content: space-between; }
+        .s-active { color: #00ff41; font-weight: bold; }
+
+        /* 📟 15-ENGINE CLUSTER */
+        .cluster-monitor { background: #000; border: 1px solid #00ff41; padding: 10px; margin-top: 10px; text-align: left; }
+        #engine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+        .node { width: 100%; height: 12px; background: #001100; border-radius: 1px; font-size: 6.5px; color: #333; display: flex; align-items: center; justify-content: center; border: 1px solid #002200; }
+
+        /* 🛑 BUTTON */
+        .btn-vpn { width: 100%; padding: 16px; margin-top: 12px; background: #00ff41; color: #000; border: none; font-weight: 900; font-size: 13px; cursor: pointer; border-radius: 6px; text-transform: uppercase; transition: 0.3s; }
+        .btn-vpn.active { background: #ff0055; color: #fff; box-shadow: 0 0 15px #ff0055; }
+
+        /* 🔒 ANTI-BANNED STATUS (BOTTOM ARROW) */
+        .bottom-branding { position: absolute; bottom: 20px; left: 0; right: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; }
+        .anti-ban-badge { background: rgba(0, 255, 65, 0.1); border: 1px solid #00ff41; padding: 5px 15px; border-radius: 20px; color: #00ff41; font-size: 10px; font-weight: 900; letter-spacing: 1px; }
+        
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.15; }
+    </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="brand-header">
+    <i class="fa-solid fa-cube rbx-icon"></i>
+    <div class="brand-text">Roblox.VpnGaming</div>
+</div>
+
+<div class="engine-room">
+    <div class="engine-title">SARMIENTO V6 | MULTI-SHIELD SYSTEM</div>
+
+    <div class="data-grid">
+        <div class="slot"><span class="label">IP Addr</span><span id="ip-val" class="value">112.204.***.***</span></div>
+        <div class="slot"><span class="label">Ping</span><span id="ping-val" class="value">-- ms</span></div>
+    </div>
+
+    <div class="shield-container">
+        <div class="shield-item">ANTI-BYFRON: <span class="s-active" id="s1">OFF</span></div>
+        <div class="shield-item">HWID SPOOFER: <span class="s-active" id="s2">OFF</span></div>
+        <div class="shield-item">UDP SCRAMBLER: <span class="s-active" id="s3">OFF</span></div>
+        <div class="shield-item">DNS TUNNEL: <span class="s-active" id="s4">OFF</span></div>
+        <div class="shield-item">IP CLOAKING: <span class="s-active" id="s5">OFF</span></div>
+        <div class="shield-item">SSL PINNING: <span class="s-active" id="s6">OFF</span></div>
+        <div class="shield-item">TRAFFIC MASK: <span class="s-active" id="s7">OFF</span></div>
+        <div class="shield-item">AUTO-PURGE: <span class="s-active" id="s8">OFF</span></div>
+    </div>
+
+    <div class="cluster-monitor">
+        <div id="engine-grid"></div>
+    </div>
+
+    <button class="btn-vpn" id="vpnBtn" onclick="toggleVpn()">INITIALIZE ENGINE</button>
+</div>
+
+<div class="bottom-branding">
+    <div class="anti-ban-badge">
+        <i class="fa-solid fa-shield-halved"></i> ANTI-BANNED ENGINE ACTIVE
+    </div>
+    <div style="font-size: 8px; margin-top: 5px; color: #888;">© SARMIENTO SHIELD TECHNOLOGY</div>
+</div>
+
+<script>
+    // --- MATRIX BG ---
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const drops = Array(Math.floor(canvas.width/20)).fill(1);
+    function draw() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "#00ff41"; ctx.font = "15px monospace";
+        drops.forEach((y, i) => {
+            ctx.fillText(Math.floor(Math.random()*2), i*20, y*20);
+            if(y*20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        });
+    }
+    setInterval(draw, 50);
+
+    // --- GEN 15 ENGINES ---
+    const grid = document.getElementById('engine-grid');
+    for(let i=1; i<=15; i++) {
+        grid.innerHTML += `<div id="node-${i}" class="node">E${i}</div>`;
+    }
+
+    // --- VPN LOGIC (MODIFIED FOR SKETCHWARE) ---
+    let isConnected = false;
+    let mainInterval;
+
+    function toggleVpn() {
+        const btn = document.getElementById('vpnBtn');
+        if(!isConnected) {
+            
+            // 🚀 ETO ANG BRIDGE PARA SA SKETCHWARE 
+            if(window.NicoBridge) { window.NicoBridge.runEngine("start"); }
+
+            btn.innerText = "AUTHENTICATING...";
+            setTimeout(() => {
+                isConnected = true;
+                btn.innerText = "TERMINATE CONNECTION";
+                btn.classList.add('active');
+                activateShields(true);
+                startEngineProcess();
+            }, 1500);
+        } else {
+            
+            // 🛑 ETO ANG STOP COMMAND
+            if(window.NicoBridge) { window.NicoBridge.runEngine("stop"); }
+
+            isConnected = false;
+            btn.innerText = "INITIALIZE ENGINE";
+            btn.classList.remove('active');
+            activateShields(false);
+            stopEngineProcess();
+            document.getElementById('ping-val').innerText = "-- ms";
+        }
+    }
+
+    function activateShields(status) {
+        for(let i=1; i<=8; i++) {
+            const s = document.getElementById('s' + i);
+            s.innerText = status ? "ON" : "OFF";
+            s.style.color = status ? "#00ff41" : "#444";
+        }
+    }
+
+    function startEngineProcess() {
+        mainInterval = setInterval(() => {
+            document.getElementById('ping-val').innerText = Math.floor(Math.random() * 10 + 15) + " ms";
+            const rand = Math.floor(Math.random() * 15) + 1;
+            const node = document.getElementById('node-' + rand);
+            node.style.background = "#00ff41";
+            node.style.color = "#000";
+            setTimeout(() => { 
+                node.style.background = "#004400"; 
+                node.style.color = "#fff"; 
+            }, 300);
+        }, 600);
+    }
+
+    function stopEngineProcess() {
+        clearInterval(mainInterval);
+        for(let i=1; i<=15; i++) {
+            const node = document.getElementById('node-' + i);
+            node.style.background = "#001100";
+            node.style.color = "#333";
+        }
+    }
+</script>
+</body>
+</html>
